@@ -5,10 +5,18 @@
 <div id="chat"></div>
 <input id="msg" type="text">
 <style>
+
+img {
+    width: 100px;
+    height: 100px;
+}
+
 input { border: 1px solid green; }
 </style>
 <script>
-
+  var smile = {
+   happysmile: 'http://static.tumblr.com/1bd1b615e6da70dd71dc84fd2f47c80d/zpmncfu/oxNng9hfv/tumblr_static_95p88l86si88ks4w4wws04wk8.png'
+  };
   var chat = document.getElementById('chat'),
       msg = document.getElementById('msg');
   msg.focus();
@@ -24,12 +32,24 @@ input { border: 1px solid green; }
 
   function writeLine(text) {
     var line = document.createElement('div');
-    line.innerHTML = '<p>' + text + '</p>';
+    var _regex = /\:(.*)\s/g;   
+    var groups = text.match(_regex);
+    var _str = text.split(_regex);
+    if(groups) {
+        groups = groups.map(function(d) {return d.slice(1)});
+
+        var smiley_str = groups.map(function(d) {
+          return '<img src='+smile[d]+'>';
+        });
+        line.innerHTML = '<div>' + smiley_str.join('') + '</div>';
+    } else {
+        line.innerHTML = '<p>' + text + '</p>';
+    }
+
     chat.appendChild(line);
   }
 
-  var socket = new WebSocket('ws://127.0.0.1/chat');
-
+  var socket = new WebSocket('ws://127.0.0.1:8042/chat');
   socket.onopen = function() {
     writeLine('connected');
   };
@@ -45,3 +65,4 @@ input { border: 1px solid green; }
 </script>
 </body>
 </html>
+
